@@ -1,0 +1,145 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Config : MonoBehaviour {
+
+    [Header("Valores iniciais")]
+    public int resolucaoTela;
+    public bool telaCheia;
+    public int qualidadeGrafica;
+    public int nivelDetalhe;
+    public int numFps;
+
+    private int widgetTela, heightTela, intTelaCheia;
+
+    [Header("UI")]
+    public Dropdown resolucao;
+    public Dropdown qualidade;
+    public Dropdown detalhes;
+
+    public Terrain terrenoAtivo;
+
+    public Toggle full;
+
+    private AudioSource audioS;
+
+    public bool aplicouConfig;
+
+    // Use this for initialization
+    void Start () {
+
+
+        QualitySettings.vSyncCount = 0;
+
+
+        audioS = GetComponent<AudioSource>();
+
+        int telaResolution = PlayerPrefs.GetInt("resolucaoTela");
+        int graficConfig = PlayerPrefs.GetInt("qualidadeGrafica");
+        int detail = PlayerPrefs.GetInt("nivelDetalhe");
+        int fullScren = PlayerPrefs.GetInt("telaCheia");
+        int frameRate = PlayerPrefs.GetInt("frame");
+
+        bool gcTelaCheia = false;
+
+        if (fullScren == 1)
+        {
+            gcTelaCheia = true;
+        }
+        else
+        {
+            gcTelaCheia = false;
+        }
+
+        resolucao.value = telaResolution;
+        qualidade.value = graficConfig;
+        detalhes.value = detail;
+        full.isOn = gcTelaCheia;
+
+    }
+
+    public void aplicar() {
+
+        aplicouConfig = true;
+
+        resolucaoTela = resolucao.value;
+        telaCheia = full.isOn;
+
+        qualidadeGrafica = qualidade.value;
+        nivelDetalhe = detalhes.value;
+
+        switch (resolucaoTela)
+        {
+            case 0:
+                widgetTela = 1920;
+                heightTela = 1080;
+                break;
+            case 1:
+                widgetTela = 1366;
+                heightTela = 768;
+                break;
+            case 2:
+                widgetTela = 1280;
+                heightTela = 720;
+                break;
+
+        }
+
+
+
+        switch (nivelDetalhe)
+        {
+            case 0:
+                terrenoAtivo = Terrain.activeTerrain;
+                terrenoAtivo.detailObjectDensity = 0.1f;
+                break;
+            case 1:
+                terrenoAtivo = Terrain.activeTerrain;
+                terrenoAtivo.detailObjectDensity = 0.3f;
+                break;
+            case 2:
+                terrenoAtivo = Terrain.activeTerrain;
+                terrenoAtivo.detailObjectDensity = 0.6f;
+                break;
+            case 3:
+                terrenoAtivo = Terrain.activeTerrain;
+                terrenoAtivo.detailObjectDensity = 1f;
+                break;
+        }
+
+
+        Screen.SetResolution(widgetTela, heightTela, telaCheia);
+        QualitySettings.SetQualityLevel(qualidadeGrafica, true);
+
+        armazenarPreferencias();
+        
+        
+        
+
+
+    }
+
+
+    void armazenarPreferencias() {
+        print("armazenarPreferencias");
+        PlayerPrefs.SetInt("resolucaoTela", resolucaoTela);
+        PlayerPrefs.SetInt("qualidadeGrafica", qualidadeGrafica);
+        PlayerPrefs.SetInt("nivelDetalhe", nivelDetalhe);
+
+        if(telaCheia) {
+            intTelaCheia = 1;
+        } else {
+            intTelaCheia = 0;
+        }
+
+        PlayerPrefs.SetInt("telaCheia", intTelaCheia);
+
+       
+        
+
+    }
+
+
+}
